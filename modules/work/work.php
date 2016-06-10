@@ -42,6 +42,7 @@ $helpTopic = 'Work';
 
 include '../../include/baseTheme.php';
 include '../../include/lib/forcedownload.php';
+//include '../../include/lib/main.lib.php';
 
 $head_content = "
 <script type='text/javascript'>
@@ -149,34 +150,40 @@ if ($is_adminOfCourse) {
 		$navigation[] = array("url"=>"work.php", "name"=> $langWorks);
 		submit_grades($grades_id, $grades);
 	} elseif (isset($id)) {
-		if (isset($choice)) {
-			if ($choice == 'disable') {
-				db_query("UPDATE assignments SET active = '0' WHERE id = '$id'");
-				show_assignments($langAssignmentDeactivated);
-			} elseif ($choice == 'enable') {
-				db_query("UPDATE assignments SET active = '1' WHERE id = '$id'");
-				show_assignments($langAssignmentActivated);
-			} elseif ($choice == 'delete') {
-				die("invalid option");
-			} elseif ($choice == "do_delete") {
-				$nameTools = $m['WorkDelete'];
-				$navigation[] = array("url"=>"work.php", "name"=> $langWorks);
-				delete_assignment($id);
-			} elseif ($choice == 'edit') {
-				$nameTools = $m['WorkEdit'];
-				$navigation[] = array("url"=>"work.php", "name"=> $langWorks);
-				show_edit_assignment($id);
-			} elseif ($choice == 'do_edit') {
-				$nameTools = $m['WorkView'];
-				$navigation[] = array("url"=>"work.php", "name"=> $langWorks);
-				edit_assignment($id);
-			} elseif ($choice = 'plain') {
-				show_plain_view($id);
+		if(is_numeric($id)){
+			$check_id = mysql_fetch_array(db_query("SELECT id FROM assignments WHERE id = '$id'"));
+			if (!empty($check_id[0])){
+
+				if (isset($choice)) {
+					if ($choice == 'disable') {
+						db_query("UPDATE assignments SET active = '0' WHERE id = '$id'");
+						show_assignments($langAssignmentDeactivated);
+					} elseif ($choice == 'enable') {
+						db_query("UPDATE assignments SET active = '1' WHERE id = '$id'");
+						show_assignments($langAssignmentActivated);
+					} elseif ($choice == 'delete') {
+						die("invalid option");
+					} elseif ($choice == "do_delete") {
+						$nameTools = $m['WorkDelete'];
+						$navigation[] = array("url"=>"work.php", "name"=> $langWorks);
+						delete_assignment($id);
+					} elseif ($choice == 'edit') {
+						$nameTools = $m['WorkEdit'];
+						$navigation[] = array("url"=>"work.php", "name"=> $langWorks);
+						show_edit_assignment($id);
+					} elseif ($choice == 'do_edit') {
+						$nameTools = $m['WorkView'];
+						$navigation[] = array("url"=>"work.php", "name"=> $langWorks);
+						edit_assignment($id);
+					} elseif ($choice = 'plain') {
+						show_plain_view($id);
+					}
+				} else {
+					$nameTools = $m['WorkView'];
+					$navigation[] = array("url"=>"work.php", "name"=> $langWorks);
+					show_assignment($id);
+				}
 			}
-		} else {
-			$nameTools = $m['WorkView'];
-			$navigation[] = array("url"=>"work.php", "name"=> $langWorks);
-			show_assignment($id);
 		}
 	} else {
 		$nameTools = $m['WorkView'];
@@ -184,16 +191,21 @@ if ($is_adminOfCourse) {
 		show_assignments();
 	}
 } else {
-	if (isset($id)) {
-		if (isset($work_submit)) {
-			$nameTools = $m['SubmissionStatusWorkInfo'];
-			$navigation[] = array("url"=>"work.php", "name"=> $langWorks);
-			$navigation[] = array("url"=>"work.php?id=$id", "name"=>$m['WorkView']);
-			submit_work($id);
-		} else {
-			$nameTools = $m['WorkView'];
-			$navigation[] = array("url"=>"work.php", "name"=> $langWorks);
-			show_student_assignment($id);
+	if (isset($id)) { //ESCAPING $ID
+		if(is_numeric($id)){
+			$check_id = mysql_fetch_array(db_query("SELECT id FROM assignments WHERE id = '$id'"));
+			if (!empty($check_id[0])){
+				if (isset($work_submit)) {
+					$nameTools = $m['SubmissionStatusWorkInfo'];
+					$navigation[] = array("url"=>"work.php", "name"=> $langWorks);
+					$navigation[] = array("url"=>"work.php?id=$id", "name"=>$m['WorkView']);
+					submit_work($id);
+				} else {
+					$nameTools = $m['WorkView'];
+					$navigation[] = array("url"=>"work.php", "name"=> $langWorks);
+					show_student_assignment($id);
+				}
+			}
 		}
 	} else {
 		show_student_assignments();
@@ -216,7 +228,6 @@ function show_submission($sid)
 	$navigation[] = array("url"=>"work.php", "name"=> $langWorks);
 
 	if ($sub = mysql_fetch_array(db_query("SELECT * FROM assignment_submit WHERE id = '$sid'"))) {
-
 		$tool_content .= "<p>$langSubmissionDescr".
 		uid_to_name($sub['uid']).
 		$sub['submission_date'].
@@ -296,16 +307,16 @@ function submit_work($id) {
   	if($submit_ok) { //only if passed the above validity checks...
 
 	$msg1 = delete_submissions_by_uid($uid, -1, $id);
-
 	$local_name = greek_to_latin(uid_to_name($uid));
-	$am = mysql_fetch_array(db_query("SELECT am FROM user WHERE user_id = '$uid'"));
+	$am = mysql_fetch_array(db_query("SELECT am FROM user WHERE user_id = '".escapeSimple($uid)."'"));
 	if (!empty($am[0])) {
 		$local_name = "$local_name $am[0]";
 	}
+
 	$local_name = replace_dangerous_char($local_name);
 	if (preg_match('/\.(ade|adp|bas|bat|chm|cmd|com|cpl|crt|exe|hlp|hta|' .'inf|ins|isp|jse|lnk|mdb|mde|msc|msi|msp|mst|pcd|pif|reg|scr|sct|shs|' .'shb|url|vbe|vbs|wsc|wsf|wsh)$/', $_FILES['userfile']['name'])) {
 		$tool_content .= "<p class=\"caution_small\">$langUnwantedFiletype: {$_FILES['userfile']['name']}<br />";
-		$tool_content .= "<a href=\"$_SERVER[PHP_SELF]?id=$id\">$langBack</a></p><br />";
+		$tool_content .= "<a href=\"".esc($_SERVER['PHP_SELF'])."?id=$id\">$langBack</a></p><br />";
 		return;
 	}
 	$secret = work_secret($id);
@@ -314,19 +325,20 @@ function submit_work($id) {
 	if (move_uploaded_file($_FILES['userfile']['tmp_name'], "$workPath/$filename")) {
 		$msg2 = "$langUploadSuccess";//to message
 		$group_id = user_group($uid, FALSE);
+
 		if ($group_sub == 'yes' and !was_submitted(-1, $group_id, $id)) {
 			delete_submissions_by_uid(-1, $group_id, $id);
 			db_query("INSERT INTO assignment_submit
 				(uid, assignment_id, submission_date, submission_ip, file_path,
 				file_name, comments, group_id) VALUES ('$uid','$id', NOW(),
-				'$REMOTE_ADDR', '$filename','".$_FILES['userfile']['name'].
-				"', '$stud_comments', '$group_id')", $currentCourseID);
+				'$REMOTE_ADDR', '$filename','".escapeSimple($_FILES['userfile']['name']).
+				"', '".escapeSimple($stud_comments)."', '$group_id')", $currentCourseID);
 		} else {
 			db_query("INSERT INTO assignment_submit
 				(uid, assignment_id, submission_date, submission_ip, file_path,
 				file_name, comments) VALUES ('$uid','$id', NOW(), '$REMOTE_ADDR',
-				'$filename','".$_FILES['userfile']['name'].
-				"', '$stud_comments')", $currentCourseID);
+				'$filename','".escapeSimple($_FILES['userfile']['name']).
+				"', '".escapeSimple($stud_comments)."')", $currentCourseID);
 		}
 
 		$tool_content .="<p class='success_small'>$msg2<br />$msg1<br /><a href='work.php'>$langBack</a></p><br />";
@@ -559,13 +571,14 @@ function delete_assignment($id) {
 
 
 // show assignment - student
-function show_student_assignment($id)
-{
+function show_student_assignment($id) # escaping
+{	
 	global $tool_content, $m, $uid, $langSubmitted, $langSubmittedAndGraded, $langNotice3,
 	$langWorks, $langUserOnly, $langBack, $langWorkGrade, $langGradeComments;
 
+	
 	$res = db_query("SELECT *, (TO_DAYS(deadline) - TO_DAYS(NOW())) AS days
-		FROM assignments WHERE id = '$id'");
+		FROM assignments WHERE id = ".escapeSimple($id)."");
 	$row = mysql_fetch_array($res);
 
 	$nav[] = array("url"=>"work.php", "name"=> $langWorks);
@@ -598,8 +611,9 @@ function show_student_assignment($id)
 		show_submission_form($id);
 	}
 	$tool_content .= "
-    <br/>
+   	<br/>
     <p align=\"right\"><a href='work.php'>$langBack</a></p>";
+
 }
 
 
