@@ -44,8 +44,8 @@ $auth = get_auth_id();
 if($_SERVER["REQUEST_METHOD"] == "POST"){
 //echo $_POST['nom_form'];
 
-  $nom_form = esc($_POST['nom_form']);
-  $prenom_form = esc($_POST['prenom_form']);
+  $nom_form = esc(isset($_POST['nom_form'])?$_POST['nom_form']:''));
+  $prenom_form = esc(isset($_POST['prenom_form'])?$_POST['prenom_form']:''));
   $userphone = esc($_POST['userphone']);
   $uname = esc($_POST['uname']);
   $email_form = esc($_POST['email_form']);
@@ -58,7 +58,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
   $userphone = esc($_GET['userphone']);
   $uname = esc($_GET['uname']);
   $email_form = esc($_GET['email_form']);
-  //$usercomment = esc($_GET['usercomment']);
+  $usercomment = esc($_GET['usercomment']);
 }
 
 

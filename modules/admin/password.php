@@ -39,6 +39,9 @@ $helpTopic = 'Profile';
 $require_valid_uid = TRUE;
 
 include '../../include/baseTheme.php';
+include '../../include/csrfguard/csrf.php'; //PROJECT start csrf gurd for POST fields
+csrfguard_inject();
+csrfguard_start(); //PROJECT inject POST token on all forms
 
 $nameTools = $langChangePass;
 $navigation[] = array("url" => "index.php", "name" => $langAdmin);
@@ -81,12 +84,12 @@ if (!isset($changePass)) {
 
 elseif (isset($submit) && isset($changePass) && ($changePass == "do")) {
 	$userid = $_REQUEST['userid'];
-	if (empty($_REQUEST['password_form']) || empty($_REQUEST['password_form1'])) {
+	if (empty($_POST['password_form']) || empty($_POST['password_form1'])) {
 		$tool_content .= mes($langFields, "", 'caution');
 		draw($tool_content, 3);
 		exit();
 	}
-	if ($_REQUEST['password_form1'] !== $_REQUEST['password_form']) {
+	if ($_POST['password_form1'] !== $_POST['password_form']) {
 		$tool_content .= mes($langPassTwo, "", 'caution_small');
 		draw($tool_content, 3);
 		exit();
@@ -96,7 +99,7 @@ elseif (isset($submit) && isset($changePass) && ($changePass == "do")) {
 	$result = db_query($sql, $mysqlMainDb);
 	$myrow = mysql_fetch_array($result);
 	$old_pass_db = $myrow['password'];
-	$new_pass = md5($_REQUEST['password_form']);
+	$new_pass = md5($_POST['password_form']);
 	$sql = "UPDATE `user` SET `password` = '$new_pass' WHERE `user_id` = '$userid'";
 	db_query($sql, $mysqlMainDb);
 	$tool_content .= mes($langPassChanged, $langHome, 'success_small');
@@ -109,7 +112,7 @@ draw($tool_content, 3);
 function mes($message, $urlText, $type) {
 	global $urlServer, $langBack, $userid;
 
- 	$str = "<p class='$type'>$message<br /><a href='$urlServer'>$urlText</a><br /><a href='$_SERVER[PHP_SELF]?userid=$userid'>$langBack</a></p><br />";
+ 	$str = "<p class='$type'>$message<br /><a href='$urlServer'>$urlText</a><br /><a href='".esc($_SERVER['PHP_SELF'])."?userid=$userid'>$langBack</a></p><br />";
 	return $str;
 }
 

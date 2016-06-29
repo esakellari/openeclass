@@ -58,6 +58,11 @@
 $require_admin = TRUE;
 // Include baseTheme
 include '../../include/baseTheme.php';
+
+include '../../include/csrfguard/csrf.php'; //PROJECT start csrf gurd for POST fields
+csrfguard_inject();
+csrfguard_start(); //PROJECT inject POST token on all forms
+
 $nameTools = $langEclassConf;
 $navigation[] = array("url" => "index.php", "name" => $langAdmin);
 // Initialise $tool_content
@@ -106,37 +111,37 @@ if (isset($submit))  {
 */
 
 '.$utf8define.'
-$urlServer	=	"'.$_POST['formurlServer'].'";
-$urlAppend	=	"'.$_POST['formurlAppend'].'";
-$webDir		=	"'.str_replace("\\","/",realpath($_POST['formwebDir'])."/").'" ;
+$urlServer	=	"'.esc($_POST['formurlServer']).'";
+$urlAppend	=	"'.esc($_POST['formurlAppend']).'";
+$webDir		=	"'.str_replace("\\","/",realpath(esc($_POST['formwebDir']))."/").'" ;
 
-$mysqlServer="'.$_POST['formmysqlServer'].'";
-$mysqlUser="'.$_POST['formmysqlUser'].'";
-$mysqlPassword="'.$_POST['formmysqlPassword'].'";
-$mysqlMainDb="'.$_POST['formmysqlMainDb'].'";
-$phpMyAdminURL="'.$_POST['formphpMyAdminURL'].'";
-$phpSysInfoURL="'.$_POST['formphpSysInfoURL'].'";
-$emailAdministrator="'.$_POST['formemailAdministrator'].'";
-$administratorName="'.$_POST['formadministratorName'].'";
-$administratorSurname="'.$_POST['formadministratorSurname'].'";
-$siteName="'.$_POST['formsiteName'].'";
+$mysqlServer="'.esc($_POST['formmysqlServer']).'";
+$mysqlUser="'.esc($_POST['formmysqlUser']).'";
+$mysqlPassword="'.esc($_POST['formmysqlPassword']).'";
+$mysqlMainDb="'.esc($_POST['formmysqlMainDb']).'";
+$phpMyAdminURL="'.esc($_POST['formphpMyAdminURL']).'";
+$phpSysInfoURL="'.esc($_POST['formphpSysInfoURL']).'";
+$emailAdministrator="'.esc($_POST['formemailAdministrator']).'";
+$administratorName="'.esc($_POST['formadministratorName']).'";
+$administratorSurname="'.esc($_POST['formadministratorSurname']).'";
+$siteName="'.esc($_POST['formsiteName']).'";
 
-$telephone="'.$_POST['formtelephone'].'";
-$emailhelpdesk="'.$_POST['formemailhelpdesk'].'";
-$Institution="'.$_POST['formInstitution'].'";
-$InstitutionUrl="'.$_POST['formInstitutionUrl'].'";
+$telephone="'.esc($_POST['formtelephone']).'";
+$emailhelpdesk="'.esc($_POST['formemailhelpdesk']).'";
+$Institution="'.esc($_POST['formInstitution']).'";
+$InstitutionUrl="'.esc($_POST['formInstitutionUrl']).'";
 
 // available: greek and english
 $language = "'.$_POST['formlanguage'].'";
 
-$postaddress = "'.$_POST['formpostaddress'].'";
-$fax = "'.$_POST['formfax'].'";
+$postaddress = "'.esc($_POST['formpostaddress']).'";
+$fax = "'.esc($_POST['formfax']).'";
 
 $close_user_registration = '.$user_reg.';
 $encryptedPasswd = "true";
 $persoIsActive = TRUE;
 
-$durationAccount = "'.$_POST['formdurationAccount'].'";
+$durationAccount = "'.esc($_POST['formdurationAccount']).'";
 ';
 	// Save new config.php
 	fwrite($fd, $stringConfig);
@@ -159,7 +164,7 @@ else {
 	}
 	// Constract the form
 	$tool_content .= "
-    <form action=\"".$_SERVER['PHP_SELF']."\" method=\"post\">";
+    <form action=\"".esc($_SERVER['PHP_SELF'])."\" method=\"post\">";
 	$tool_content .= "
 
   <table class=\"FormData\" width=\"99%\" align=\"left\">

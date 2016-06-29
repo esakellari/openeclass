@@ -41,6 +41,7 @@
 $require_admin = TRUE;
 // Include baseTheme
 include '../../include/baseTheme.php';
+
 // Define $nameTools
 $nameTools = $langVisitsStats;
 $navigation[] = array("url" => "index.php", "name" => $langAdmin);

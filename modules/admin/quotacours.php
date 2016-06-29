@@ -78,8 +78,8 @@ if (isset($search) && ($search=="yes")) {
 	$searchurl = "&search=yes";
 }
 // Update course quota
-if (isset($submit))  {
-	$dq = $dq * 1000000;
+if (isset($submit))  { 
+	$dq = $dq * 1000000;echo $dq;
         $vq = $vq * 1000000;
         $gq = $gq * 1000000;
         $drq = $drq * 1000000;
@@ -107,7 +107,7 @@ else {
 	$drq = $q['dropbox_quota'] / 1000000;
 	// Constract the edit form
 	$tool_content .= "
-<form action=".$_SERVER['PHP_SELF']."?c=".htmlspecialchars($_GET['c'])."".$searchurl." method=\"post\">
+<form action=".esc($_SERVER['PHP_SELF'])."?c=".htmlspecialchars($_GET['c'])."".$searchurl." method=\"post\">
   <table class=\"FormData\" width=\"99%\" align=\"left\">
   <tbody>
   <tr>
@@ -144,7 +144,8 @@ else {
 </form>\n";
 }
 // If course selected go back to editcours.php
-if (isset($_GET['c'])) {
+if (isset($_GET['c'])) { $t= esc($_GET['c']);
+echo $t;
 	$tool_content .= "<p align=\"right\"><a href=\"editcours.php?c=".htmlspecialchars($_GET['c'])."".$searchurl."\">".$langBack."</a></p>";
 }
 // Else go back to index.php directly

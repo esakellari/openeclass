@@ -45,6 +45,9 @@ include '../../include/baseTheme.php';
 include 'admin.inc.php';
 include '../auth/auth.inc.php';
 include '../../include/jscalendar/calendar.php';
+include '../../include/csrfguard/csrf.php'; //PROJECT start csrf gurd for POST fields
+csrfguard_inject();
+csrfguard_start(); //PROJECT inject POST token on all forms
 
 if (isset($_GET['u']) or isset($_POST['u']))
 $_SESSION['u_tmp']=$u;
@@ -85,7 +88,7 @@ if((!empty($u)) && ctype_digit($u) )	// validate the user id
     </ul>
   </div>";
 		$tool_content .= "
-<form name='edituser' method='post' action='$_SERVER[PHP_SELF]'>
+<form name='edituser' method='post' action='".esc($_SERVER['PHP_SELF'])."'>
   <table class='FormData' width='99%' align='left'>
   <tbody>
   <tr>
@@ -321,14 +324,14 @@ if (mysql_num_rows($username_check) > 1) {
   if (empty($fname) OR empty($lname) OR empty($username)) {
 	$tool_content .= "<table width='99%'><tbody><tr>
         <td class='caution' height='60'><p>$langEmptyFields</p>
-	<p><a href='$_SERVER[PHP_SELF]'>$langAgain</a></p></td></tr></tbody></table><br /><br />";
+	<p><a href='".esc($_SERVER['PHP_SELF'])."'>$langAgain</a></p></td></tr></tbody></table><br /><br />";
 	draw($tool_content, 3, ' ', $head_content);
 	    exit();
 	}
  	 elseif(isset($user_exist) AND $user_exist == TRUE) {
 		$tool_content .= "<table width='99%'><tbody><tr>
           	<td class='caution' height='60'><p>$langUserFree</p>
-		<p><a href='$_SERVER[PHP_SELF]'>$langAgain</a></p></td></tr></tbody></table><br /><br />";
+		<p><a href='".esc($_SERVER['PHP_SELF'])."'>$langAgain</a></p></td></tr></tbody></table><br /><br />";
 		draw($tool_content, 3, ' ', $head_content);
 	    exit();
   }

@@ -47,6 +47,9 @@ $require_admin = TRUE;
 include '../../include/baseTheme.php';
 include 'admin.inc.php';
 include '../../include/jscalendar/calendar.php';
+include '../../include/csrfguard/csrf.php'; //PROJECT start csrf gurd for POST fields
+csrfguard_inject();
+csrfguard_start(); //PROJECT inject POST token on all forms
 
 $tool_content = $head_content = "";
 $lang_jscalendar = langname_to_code($language);

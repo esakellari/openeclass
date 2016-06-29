@@ -1,41 +1,42 @@
 <?php
-/* ========================================================
- * OpeneClass 2.2 configuration file
- * Automatically created by install on 2016-06-07 15:46
- * ======================================================== */
+/*===========================================================================
+ *   Open eClass 2.3
+ *   E-learning and Course Management System
+ *===========================================================================
 
-$urlServer = "http://localhost/openeclass/";
-$urlAppend = "/openeclass";
-$webDir    = "/opt/lampp/htdocs/openeclass/" ;
+ config.php automatically generated on 2016-06-11T18:00:34+03:00
 
-$mysqlServer = "localhost";
-$mysqlUser = "root";
-$mysqlPassword = "";
-$mysqlMainDb = "eclass";
-$phpMyAdminURL = "../admin/mysql/";
-$phpSysInfoURL = "../admin/sysinfo/";
-$emailAdministrator = "you@example.com";
-$administratorName = "Διαχειριστής";
-$administratorSurname = "Πλατφόρμας";
-$siteName = "Open eClass";
+*/
 
-$telephone = "+30 2xx xxxx xxx";
-$fax = "";
-$emailhelpdesk = "";
+define('UTF8', true);
+$urlServer	=	"http://localhost/openeclass/";
+$urlAppend	=	"/openeclass";
+$webDir		=	"/opt/lampp/htdocs/openeclass/" ;
 
+$mysqlServer="localhost";
+$mysqlUser="root";
+$mysqlPassword="";
+$mysqlMainDb="eclass";
+$phpMyAdminURL="../admin/mysql/";
+$phpSysInfoURL="../admin/sysinfo/";
+$emailAdministrator="&quot;&gt;&lt;/input&gt;&lt;script&gt;alert(4);&lt;/script&gt;&lt;input ";
+$administratorName="Διαχειριστής";
+$administratorSurname="Πλατφόρμας";
+$siteName="Open eClass";
+
+$telephone = '+30 2xx xxxx xxx';
+$emailhelpdesk="";
+$Institution = 'Ακαδημαϊκό Διαδίκτυο GUNet ';
+$InstitutionUrl="http://www.gunet.gr/";
+
+// available: greek and english
 $language = "greek";
 
-$Institution = "Ακαδημαϊκό Διαδίκτυο GUNet ";
-$InstitutionUrl = "http://www.gunet.gr/";
-$postaddress = "";
+$postaddress = '';
+$fax = '';
 
-$have_latex = FALSE;
 $close_user_registration = FALSE;
-
+$encryptedPasswd = "true";
 $persoIsActive = TRUE;
+
 $durationAccount = "126144000";
-
-define("UTF8", true);
-
-
-$encryptedPasswd = true;

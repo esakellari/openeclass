@@ -49,6 +49,11 @@
 $require_admin = TRUE;
 include '../../include/baseTheme.php';
 include_once '../auth/auth.inc.php';
+
+include '../../include/csrfguard/csrf.php'; //PROJECT start csrf gurd for POST fields
+csrfguard_inject();
+csrfguard_start(); //PROJECT inject POST token on all forms
+
 $nameTools = $langAuthSettings;
 $navigation[] = array("url" => "index.php", "name" => $langAdmin);
 $navigation[] = array("url" => "auth.php", "name" => $langUserAuthentication);

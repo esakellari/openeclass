@@ -54,6 +54,8 @@
 $require_admin = TRUE;
 // Include baseTheme
 include '../../include/baseTheme.php';
+include '../../include/csrfguard/csrf.php'; //PROJECT start csrf gurd for POST fields
+csrfguard_inject();
 if(!isset($_GET['c'])) { die(); }
 // Define $nameTools
 $nameTools = $langCourseDel;
@@ -72,31 +74,39 @@ $searchurl = "";
 if (isset($search) && ($search=="yes")) {
 	$searchurl = "&search=yes";
 }
+//PROJECT:Here we create a random token for get request
+$delToken = csrfguard_generate_token("delete"); // generate a random token for GET request
+
+
 // Delete course
-if (isset($_GET['delete']) && isset($_GET['c']))  {
-	db_query("DROP DATABASE `".mysql_real_escape_string($_GET['c'])."`");
-        mysql_select_db($mysqlMainDb);
-        $code = quote($_GET['c']);
-	db_query("DELETE FROM cours_faculte WHERE code = $code");
-	db_query("DELETE FROM cours_user WHERE cours_id =
-                        (SELECT cours_id FROM cours WHERE code = $code)");
-	db_query("DELETE FROM annonces WHERE cours_id =
-                        (SELECT cours_id FROM cours WHERE code = $code)");
-	db_query("DELETE FROM cours WHERE code = $code");
-	@mkdir("../../courses/garbage");
-	rename("../../courses/".$_GET['c'], "../../courses/garbage/".$_GET['c']);
-	$tool_content .= "<p>".$langCourseDelSuccess."</p>";
+if (isset($_GET['delete']) && isset($_GET['c']) && isset($_GET['token']))  {//PROJECT:DELETE course only if token exists
+	
+	if(hash_equals($_GET['token'] , $_SESSION["get_token"])){//PROJECT:DELETE course only if token is valid
+		db_query("DROP DATABASE `".mysql_real_escape_string($_GET['c'])."`");
+	        mysql_select_db($mysqlMainDb);
+	        $code = quote($_GET['c']);
+		db_query("DELETE FROM cours_faculte WHERE code = $code");
+		db_query("DELETE FROM cours_user WHERE cours_id =
+	                        (SELECT cours_id FROM cours WHERE code = $code)");
+		db_query("DELETE FROM annonces WHERE cours_id =
+	                        (SELECT cours_id FROM cours WHERE code = $code)");
+		db_query("DELETE FROM cours WHERE code = $code");
+		@mkdir("../../courses/garbage");
+		rename("../../courses/".$_GET['c'], "../../courses/garbage/".$_GET['c']);
+		$tool_content .= "<p>".$langCourseDelSuccess."</p>";
+	}
 }
 // Display confirmatiom message for course deletion
 else {
+	$_SESSION["get_token"] = $delToken; //PROJECT put a session get_token
 	$row = mysql_fetch_array(mysql_query("SELECT * FROM cours WHERE code='".mysql_real_escape_string($_GET['c'])."'"));
 
 	$tool_content .= "<table><caption>".$langCourseDelConfirm."</caption><tbody>";
 	$tool_content .= "  <tr>
     <td><br />".$langCourseDelConfirm2." <em>".htmlspecialchars($_GET['c'])."</em>;<br /><br /><i>".$langNoticeDel."</i><br /><br /></td>
-  </tr>";
+  </tr>";//PROJECT add the token in the link
 	$tool_content .= "  <tr>
-    <td><ul><li><a href=\"".$_SERVER['PHP_SELF']."?c=".htmlspecialchars($_GET['c'])."&amp;delete=yes".$searchurl."\"><b>$langYes</b></a><br />&nbsp;</li>
+    <td><ul><li><a href=\"".esc($_SERVER['PHP_SELF'])."?token=".$delToken."&c=".htmlspecialchars($_GET['c'])."&amp;delete=yes".$searchurl."\"><b>$langYes</b></a><br />&nbsp;</li> 
   <li><a href=\"listcours.php?c=".htmlspecialchars($_GET['c'])."".$searchurl."\"><b>$langNo</b></a></li></ul></td>
   </tr>";
 	$tool_content .= "</tbody></table><br />";
@@ -122,4 +132,5 @@ else {
 // $tool_content: the content to display
 // 3: display administrator menu
 // admin: use tool.css from admin folder
+csrfguard_start(); //PROJECT inject POST token on all forms
 draw($tool_content,3, 'admin');

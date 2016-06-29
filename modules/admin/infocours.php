@@ -58,6 +58,7 @@ $searchurl = "";
 $require_admin = TRUE;
 // Include baseTheme
 include '../../include/baseTheme.php';
+
 if(!isset($_GET['c'])) { die(); }
 // Define $nameTools
 $nameTools = $langCourseInfo;
@@ -75,12 +76,15 @@ if (isset($search) && ($search=="yes")) {
 	$searchurl = "&search=yes";
 }
 // Update cours basic information
-if (isset($submit))  {
+if (isset($submit))  { 
   // Get faculte ID and faculte name for $faculte
   // $faculte example: 12--Tmima 1
   list($facid, $facname) = explode("--", $faculte);
   // Update query
 	$sql = mysql_query("UPDATE cours SET faculte='$facname', titulaires='$titulaires', intitule='$intitule', faculteid='$facid' WHERE code='".mysql_real_escape_string($_GET['c'])."'");
+
+echo $sql;
+
 	// Some changes happened
 	if (mysql_affected_rows() > 0) {
 		$sql = mysql_query("UPDATE cours_faculte SET faculte='$facname', facid='$facid' WHERE code='".mysql_real_escape_string($_GET['c'])."'");
@@ -97,8 +101,9 @@ else {
 	// Get course information
 	$row = mysql_fetch_array(mysql_query("SELECT * FROM cours WHERE code='".mysql_real_escape_string($_GET['c'])."'"));
 	// Constract the edit form
+
 	$tool_content .= "
-  <form action=".$_SERVER['PHP_SELF']."?c=".htmlspecialchars($_GET['c'])."".$searchurl." method=\"post\">
+  <form action=".esc($_SERVER['PHP_SELF'])."?c=".htmlspecialchars($_GET['c'])."".$searchurl." method=\"post\">
   <table class=\"FormData\" width=\"99%\" align=\"left\">
   <tbody>
   <tr>
@@ -120,7 +125,7 @@ else {
 	}
 	$tool_content .= "</select>
     </td>
-  </tr>
+  </tr>pass
   <tr>
     <th class=\"left\">".$langCourseCode.":</th>
     <td><i>".$row['code']."</i></td>

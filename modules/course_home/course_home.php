@@ -105,8 +105,8 @@ list($maxorder) = mysql_fetch_row($result);
 // other actions in course unit
 if ($is_adminOfCourse) {
         if (isset($_REQUEST['edit_submit'])) {
-                $title = autoquote($_REQUEST['unittitle']);
-                $descr = autoquote($_REQUEST['unitdescr']);
+                $title = esc(autoquote($_REQUEST['unittitle']));
+                $descr = esc(autoquote($_REQUEST['unitdescr']));
                 if (isset($_REQUEST['unit_id'])) { // update course unit
                         $unit_id = intval($_REQUEST['unit_id']);
                         $result = db_query("UPDATE course_units SET

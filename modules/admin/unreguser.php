@@ -43,6 +43,8 @@
 // BASETHEME, OTHER INCLUDES AND NAMETOOLS
 $require_admin = TRUE;
 include '../../include/baseTheme.php';
+include '../../include/csrfguard/csrf.php'; //PROJECT start csrf gurd for POST fields
+csrfguard_inject();
 $nameTools = $langUnregUser;
 $navigation[]= array ("url"=>"index.php", "name"=> $langAdmin);
 $tool_content = "";
@@ -56,19 +58,25 @@ $u_account = $u? uid_to_username($u): '';
 $u_realname = $u? uid_to_name($u): '';
 $u_statut = get_uid_statut($u);
 $t = 0;
+//PROJECT:Here we create a random token for get request
+$delToken = csrfguard_generate_token("delete"); // generate a random token for GET request
 
 if (!$doit) {
+	$_SESSION["get_token"] = $delToken; //PROJECT put a session get_token
         $tool_content .= "<h4>$langConfirmDelete</h4><p>$langConfirmDeleteQuestion1 <em>$u_realname ($u_account)</em>";
         if($c) {
                 $tool_content .= " $langConfirmDeleteQuestion2 <em>".htmlspecialchars($c)."</em>";
         }
         $tool_content .= ";</p>
                 <ul>
-                <li>$langYes: <a href=\"unreguser.php?u=".htmlspecialchars($u)."&c=".htmlspecialchars($c)."&doit=yes\">$langDelete</a><br>&nbsp;</li>
+                <li>$langYes: <a href=\"unreguser.php?token=".$delToken."&u=".htmlspecialchars($u)."&c=".htmlspecialchars($c)."&doit=yes\">$langDelete</a><br>&nbsp;</li>
                 <li>$langNo: <a href=\"edituser.php?u=".htmlspecialchars($u)."\">$langBack</a></li>
                 </ul>";
 } else {
-        if (!$c) {
+	//PROJECT:DELETE course only if token is valid
+	if(hash_equals($_GET['token'] , $_SESSION["get_token"]))
+	{
+          if (!$c) {
                 if ($u == 1) {
                         $tool_content .= $langTryDeleteAdmin;
                 } else {
@@ -227,6 +235,7 @@ if (!$doit) {
                 $tool_content .= "<br><a href=\"edituser.php?u=".htmlspecialchars($u)."\">$langEditUser $u_account</a>&nbsp;&nbsp;&nbsp;";
         }
         $tool_content .= "<a href=\"./index.php\">$langBackAdmin</a>.<br />\n";
+  }
 }
 
 function get_uid_statut($u)
@@ -242,5 +251,5 @@ function get_uid_statut($u)
 		return FALSE;
 	}
 }
-
+csrfguard_start(); //PROJECT inject POST token on all forms
 draw($tool_content,3,'admin');

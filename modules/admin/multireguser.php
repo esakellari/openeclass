@@ -12,6 +12,9 @@ define('SUFFIX_LEN', 4);
 $require_admin = TRUE;
 include '../../include/baseTheme.php';
 include '../../include/sendMail.inc.php';
+include '../../include/csrfguard/csrf.php'; //PROJECT start csrf gurd for POST fields
+csrfguard_inject();
+csrfguard_start(); //PROJECT inject POST token on all forms
 
 $nameTools = $langMultiRegUser;
 $navigation[]= array ("url"=>"index.php", "name"=> $langAdmin);
@@ -21,12 +24,16 @@ $error = '';
 $acceptable_fields = array('first', 'last', 'email', 'id', 'phone', 'username');
 
 if (isset($_POST['submit'])) {
+	$_POST['fields'] = esc($_POST['fields']);
+	$_POST['user_info'] = esc($_POST['user_info']);
+	$_POST['prefix'] = esc($_POST['prefix']);
+
         $send_mail = isset($_POST['send_mail']) && $_POST['send_mail'];
         $unparsed_lines = '';
         $new_users_info = array();
         $newstatut = ($_POST['type'] == 'prof')? 1: 5;
         $facid = intval($_POST['facid']);
-        $am = $_POST['am'];
+        $am = esc($_POST['am']);
         $fields = preg_split('/[ \t,]+/', $_POST['fields'], -1, PREG_SPLIT_NO_EMPTY);
         foreach ($fields as $field) {
                 if (!in_array($field, $acceptable_fields)) {
@@ -112,7 +119,7 @@ if (isset($_POST['submit'])) {
                 $facs[$n['id']] = $n['name'];
         }
         $tool_content .= "$langMultiRegUserInfo
-<form method='post' action='$_SERVER[PHP_SELF]'>
+<form method='post' action='".esc($_SERVER['PHP_SELF'])."'>
 <table class='FormData'>
 <tr><th>$langMultiRegFields</th>
     <td><input type='text' name='fields' size='50' value='first last id email phone' /></td>

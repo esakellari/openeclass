@@ -28,6 +28,10 @@
 $require_admin = true;
 include '../../include/baseTheme.php';
 include '../../include/sendMail.inc.php';
+include '../../include/csrfguard/csrf.php'; //PROJECT start csrf gurd for POST fields
+//csrfguard_inject();
+//csrfguard_start(); //PROJECT inject POST token on all forms
+
 $navigation[] = array("url" => "../admin/index.php", "name" => $langAdmin);
 
 // Initialise $tool_content
@@ -65,14 +69,21 @@ if($submit) {
 	// check if there are empty fields
 	if (!$all_set) {
 		$tool_content .= "<p class='caution_small'>$langEmptyFields</p>
-			<br><br><p align='right'><a href='$_SERVER[PHP_SELF]'>$langAgain</a></p>";
+			<br><br><p align='right'><a href='".esc($_SERVER['PHP_SELF'])."'>$langAgain</a></p>";
 	} elseif ($user_exist) {
 		$tool_content .= "<p class='caution_small'>$langUserFree</p>
-			<br><br><p align='right'><a href='$_SERVER[PHP_SELF]'>$langAgain</a></p>";
+			<br><br><p align='right'><a href='".esc($_SERVER['PHP_SELF'])."'>$langAgain</a></p>";
 	} elseif(!email_seems_valid($email_form)) {
 		$tool_content .= "<p class='caution_small'>$langEmailWrong.</p>
-			<br><br><p align='right'><a href='$_SERVER[PHP_SELF]'>$langAgain</a></p>";
+			<br><br><p align='right'><a href='".esc($_SERVER['PHP_SELF'])."'>$langAgain</a></p>";
 	} else {
+		$nom_form = esc($nom_form);
+		$prenom_form = esc($prenom_form);
+		$uname = esc($uname);
+                $password = esc($password);
+		$email_form = esc($email_form);
+		$comment = esc($comment);
+
                 $registered_at = time();
 		$expires_at = time() + $durationAccount;
 		$password_encrypted = md5($password);
@@ -149,7 +160,7 @@ $langEmail : $emailhelpdesk
                 $title = $langNewProf;
         }
 
-	$tool_content .= "<form action='$_SERVER[PHP_SELF]' method='post'>
+	$tool_content .= "<form action='".esc($_SERVER['PHP_SELF'])."' method='post'>
 	<table width='99%' align='left' class='FormData'>
 	<tbody><tr>
 	<th width='220'>&nbsp;</th>

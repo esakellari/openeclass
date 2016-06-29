@@ -57,6 +57,11 @@ $require_admin = TRUE;
 include '../../include/baseTheme.php';
 // Include functions needed to send email
 include('../../include/sendMail.inc.php');
+
+include '../../include/csrfguard/csrf.php'; //PROJECT start csrf gurd for POST fields
+csrfguard_inject();
+csrfguard_start(); //PROJECT inject POST token on all forms
+
 // Define $nameTools
 $nameTools=$sendinfomail;
 $navigation[] = array("url" => "index.php", "name" => $langAdmin);
@@ -99,7 +104,7 @@ $langEmail : $emailhelpdesk
 } else {
         // Display form to administrator
         $tool_content .= "
-<form action='$_SERVER[PHP_SELF]' method='post'>
+<form action='".($_SERVER['PHP_SELF'])."' method='post'>
   <table class='FormData'>
   <tbody>
   <tr>

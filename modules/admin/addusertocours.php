@@ -28,6 +28,10 @@
 $require_admin = TRUE;
 // Include baseTheme
 include '../../include/baseTheme.php';
+include '../../include/csrfguard/csrf.php'; //PROJECT start csrf gurd for POST fields
+csrfguard_inject();
+csrfguard_start(); //PROJECT inject POST token on all forms
+
 if(!isset($_GET['c'])) { die(); }
 // Define $nameTools
 $nameTools = $langAdminUsers;
@@ -138,7 +142,7 @@ function reverseAll(cbList) {
 
 </script>';
 
-	$tool_content .= "<form action=".$_SERVER['PHP_SELF']."?c=".htmlspecialchars($_GET['c'])."".$searchurl." method='post'>";
+	$tool_content .= "<form action=".esc($_SERVER['PHP_SELF'])."?c=".htmlspecialchars($_GET['c'])."".$searchurl." method='post'>";
 	$tool_content .= "<table class='FormData' width='99%' align='left'><tbody>
                           <tr><th colspan='3'>".$langFormUserManage."</th></tr>
                           <tr><th align=left>".$langListNotRegisteredUsers."<br />
